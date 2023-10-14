@@ -2,15 +2,17 @@
   <div id="content">
     <img id="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/1200px-International_Pok%C3%A9mon_logo.svg.png">
     <div id="search-container">
-      <input id="input" placeholder="Search pokemons">
-      <button @click="search">Search</button>
+      <h2>You can search pokemon by id</h2>
+      <div>
+        <input id="input" placeholder="Search pokemons">
+        <button @click="search">Search</button>
+      </div>
     </div> 
 
     <ul id="pokemons-container">
       <li v-for="pokemon in pokemons.results" :key="pokemon.name">        
         <img :src="renderPokemons(pokemon)" :alt="pokemon.name">   
-        <h2>{{ pokemon.name.toUpperCase() }} </h2> 
-        <span></span>             
+        <h2>{{ pokemon.name.toUpperCase() }} </h2>                      
       </li>       
     </ul> 
 
@@ -47,57 +49,65 @@ export default {
           this.pokemons = response.data;
         })
         .catch((error) => {
-          console.error(error);
+          throw new Error('Não foi possível obter as informações');
         });
     },
     
     renderPokemons(pokemon) {
       const urlSpritesParts = pokemon.url.split('/');   
       const id = urlSpritesParts[urlSpritesParts.length - 2];    
-      const urlSprites = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${id}.png`;   
-      console.log(pokemon)        
+      const urlSprites = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${id}.png`;                   
       return urlSprites
     },
 
-    search() {
-      const submit = document.querySelector('#input');
-      this.pokemonsPerPage = 1;
-      this.id = submit.value; 
+    search() { 
+        const input = document.querySelector('#input');
+        this.pokemonsPerPage = 1;      
+        this.id = input.value;
 
+      if(this.id > 0 && this.id <= 150) {     
+        this.offset = this.id - 1;
+        this.getPokemons()   
+        return     
+      }   
+      alert('Enter an id between 1 and 150');
+      this.offset = 0;
+      this.pokemonsPerPage = 25;  
       this.getPokemons()
-  
-      if(this.pokemonsPerPage == null) {
-        this.getPokemons()        
-      }     
     },
 
-    firstPage() {           
+    firstPage() { 
+      if(this.pokemonsPerPage != 1){
         this.offset = 0;  
-        this.getPokemons();   
+        this.getPokemons();
+      }  
     },  
     
     backPage() {      
-      if(this.offset > 0) {     
+      if(this.offset > 0 && this.pokemonsPerPage != 1) {     
         this.offset -= 25
         this.getPokemons()           
       }
     },
 
     nextPage() {      
-      if(this.offset < 125) {      
+      if(this.offset < 125 && this.pokemonsPerPage != 1) {      
         this.offset += 25
         this.getPokemons()
       }
       
     },    
 
-    lastPage() {           
-        this.offset = 125; 
-        this.getPokemons();    
+    lastPage() {        
+      if(this.pokemonsPerPage != 1) {
+         this.offset = 125;
+         this.getPokemons();
+      }            
     },  
   },
   mounted() {
-    this.getPokemons();   
+    this.getPokemons(); 
+    this.favorites()  
   },
 }; 
 
@@ -128,8 +138,16 @@ export default {
     border-top: solid 2px #fff;
     display: flex;
     justify-content: center;
-    align-items: center;     
+    align-items: center;  
+    flex-direction: column;   
   } 
+
+  #search-container h2 {
+    color: #fff;
+    margin: 20px 0;
+    width: 90vw;
+    text-align: center;
+  }
   
   #search-container input {
     text-align: center;
@@ -193,7 +211,7 @@ export default {
     color: #fff;
     border-radius: 12px;
     padding: 40px 30px;
-    margin: 8px;
+    margin: 8px;    
   }
 
   #pokemons-container img {
