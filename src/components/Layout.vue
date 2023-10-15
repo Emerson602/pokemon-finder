@@ -12,9 +12,7 @@
     <ul id="pokemons-container">
       <li v-for="pokemon in pokemons.results" :key="pokemon.name" :id="id">        
         <img :src="renderPokemons(pokemon)" :alt="pokemon.name">   
-        <h2>{{ id }}. {{ pokemon.name.toUpperCase() }} </h2>  
-        
-                                       
+        <h2>{{ id }}. {{ pokemon.name.toUpperCase() }} </h2>                                       
       </li>       
     </ul> 
 
@@ -59,8 +57,7 @@ export default {
       const urlSpritesParts = pokemon.url.split('/');   
       const idPokemons = urlSpritesParts[urlSpritesParts.length - 2];  
       this.id = idPokemons   
-      const urlSprites = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${idPokemons}.png`;  
-
+      const urlSprites = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${idPokemons}.png`; [
       return urlSprites
     },
 
