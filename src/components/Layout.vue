@@ -10,9 +10,11 @@
     </div> 
 
     <ul id="pokemons-container">
-      <li v-for="pokemon in pokemons.results" :key="pokemon.name">        
+      <li v-for="pokemon in pokemons.results" :key="pokemon.name" :id="id">        
         <img :src="renderPokemons(pokemon)" :alt="pokemon.name">   
-        <h2>{{ pokemon.name.toUpperCase() }} </h2>                      
+        <h2>{{ id }}. {{ pokemon.name.toUpperCase() }} </h2>  
+        
+                                       
       </li>       
     </ul> 
 
@@ -46,35 +48,37 @@ export default {
       axios
         .get(`https://pokeapi.co/api/v2/pokemon?limit=${this.pokemonsPerPage}&offset=${this.offset}`)
         .then((response) => {
-          this.pokemons = response.data;
+          this.pokemons = response.data;         
         })
         .catch((error) => {
           throw new Error('Não foi possível obter as informações');
         });
     },
-    
-    renderPokemons(pokemon) {
+
+    renderPokemons(pokemon) {      
       const urlSpritesParts = pokemon.url.split('/');   
-      const id = urlSpritesParts[urlSpritesParts.length - 2];    
-      const urlSprites = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${id}.png`;                   
+      const idPokemons = urlSpritesParts[urlSpritesParts.length - 2];  
+      this.id = idPokemons   
+      const urlSprites = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${idPokemons}.png`;  
+
       return urlSprites
     },
 
     search() { 
         const input = document.querySelector('#input');
-        this.pokemonsPerPage = 1;      
-        this.id = input.value;
-
+        this.pokemonsPerPage = 1;             
+        this.id = input.value;          
       if(this.id > 0 && this.id <= 150) {     
         this.offset = this.id - 1;
         this.getPokemons()   
         return     
-      }   
+      }      
+      
       alert('Enter an id between 1 and 150');
       this.offset = 0;
       this.pokemonsPerPage = 25;  
       this.getPokemons()
-    },
+    },  
 
     firstPage() { 
       if(this.pokemonsPerPage != 1){
@@ -106,8 +110,7 @@ export default {
     },  
   },
   mounted() {
-    this.getPokemons(); 
-    this.favorites()  
+    this.getPokemons();    
   },
 }; 
 
